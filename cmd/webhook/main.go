@@ -142,14 +142,13 @@ func newAdmission(c client.Client) *webhook.Admission {
 				}
 
 				uid := owner.GetUID()
-
 				if len(strings.TrimSpace(string(uid))) == 0 {
 					return webhook.Errored(401, fmt.Errorf("error fetching owner - unable to compute uid: %w", err))
 				}
 
 				patch := webhook.JSONPatchOp{Operation: "add", Path: fmt.Sprintf("/metadata/ownerReferences/%d/uid", i), Value: uid}
 				log.Print("apply patch", patch)
-				webhook.Patched("patches", patch)
+				return webhook.Patched("patches", patch)
 			}
 
 			return webhook.Allowed("allowed")
