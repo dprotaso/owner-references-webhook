@@ -1,0 +1,30 @@
+# Copyright 2024 The Knative Authors
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: webhook-owner-references.backup.knative.dev
+webhooks:
+- name: webhook-owner-references.backup.knative.dev
+  admissionReviewVersions: ["v1"]
+  clientConfig:
+    service:
+      name: webhook-owner-references
+      namespace: knative-restore
+      path: "/mutating"
+    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURvRENDQW9pZ0F3SUJBZ0lVVDRiazAyRzBtcVl2WDE2Tlhyem1TWjBlQTkwd0RRWUpLb1pJaHZjTkFRRUwKQlFBd2FERUxNQWtHQTFVRUJoTUNWVk14RHpBTkJnTlZCQWdUQms5eVpXZHZiakVSTUE4R0ExVUVCeE1JVUc5eQpkR3hoYm1ReEV6QVJCZ05WQkFvVENrdDFZbVZ5Ym1WMFpYTXhDekFKQmdOVkJBc1RBa05CTVJNd0VRWURWUVFECkV3cExkV0psY201bGRHVnpNQjRYRFRJME1EUXlOREU0TURVd01Gb1hEVEk1TURReU16RTRNRFV3TUZvd2FERUwKTUFrR0ExVUVCaE1DVlZNeER6QU5CZ05WQkFnVEJrOXlaV2R2YmpFUk1BOEdBMVVFQnhNSVVHOXlkR3hoYm1ReApFekFSQmdOVkJBb1RDa3QxWW1WeWJtVjBaWE14Q3pBSkJnTlZCQXNUQWtOQk1STXdFUVlEVlFRREV3cExkV0psCmNtNWxkR1Z6TUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUFyNjJEZEpCVkRaN24KbEZzMGVvQzU1VThZVjFwQ0wvTHJWS0cwZUlFVWcxcGRFMEZINmkyVXFqVjVQWFlaUU94ZFJvTFN3N3pYbFA2eApaNk5qWGl5UmdlWWl0aVpNRnAzejNUQXpUSDdXU1NDYjZ2RTE5KzhrQ1JWdXZ2ZHNyOUpQM0c5bFZPWVMyUmtrCks3RjFQSkNEblpnVnJEK1lISC8zZzlrTnlZRXRmemVIMkNUeDdLUnVQV05RdTlQZVFoc3JFUk5ZckcrRkJPZnYKYkZhR1JlNGxqK0FVVmQ4VEc1OHFZLzJ0Z1hsQjk4Mno3bUNNcGhVdVYwenlzMUxEYjYvb1kvcGpKaVBENmFlOQpQNXZaV3NLUGxjT2Z0amJXSFB2Z0x3Q3NscjlpeFA0aHFmYUNTcFJQUG5KNUtVdTF3cWptaGtlMEtWSmlSM2lzCnJXQmdwa0oyWlFJREFRQUJvMEl3UURBT0JnTlZIUThCQWY4RUJBTUNBUVl3RHdZRFZSMFRBUUgvQkFVd0F3RUIKL3pBZEJnTlZIUTRFRmdRVXNDY2NRQ3N1SEovT3V2NlBlZlZxci80clU0SXdEUVlKS29aSWh2Y05BUUVMQlFBRApnZ0VCQUhjTFNYSU1KMG83eDJPTUw1QVN0dXFYckhSYkErWjJJSzJyMGxTMGU3aWlDRUp5WndWcFlXSitoamo2CkZuRGMyeW5TVUpmZWNUUFNlQzNEQVRDS082ZUZlSFlVUzVTOVY3K2xBUWpZeDN5cVFNMGxkZGtPRnZzV0FRQzQKNDNZbDYwc1NNa1JrN2pub1lqRlpXdzQ1bnorY0haZ21EaWV3Mk1uU3RPb0dwbnFoMmdHNklySE1OZWNzbk9uVQpFQkFmcmZiTXRJOHJ6VERHM1FRNDNkblpudHBGckQ3YXlIVUE0SEJQVlBsZWR3QjF6TDA3NW1zYU5kYXFDYVU5Ci9EN1BDaVp1QVFrZGNJcEIwRmdGZ0ZJanhHY3M1WHd6eFIzMVhUU1dKMDdodU5KOFk5Rmx1bHRxTDlmbXhZeXQKd1FnbnByZTJtdkFFYUZNQ1lhL0RyTnlsT0xrPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0t
+
+  failurePolicy: Fail
+  sideEffects: None
+  timeoutSeconds: 10
+  matchConditions:
+  - name: "missing-owner-reference-uid"
+    expression: "has(object.metadata.ownerReferences) && object.metadata.ownerReferences.exists(o, !has(o.uid) || o.uid == '')"
+  rules:
+  - operations: ["CREATE"]
+    apiGroups: ["*"]
+    apiVersions: ["*"]
+    resources: ["pods"]
+    scope: "*"
+

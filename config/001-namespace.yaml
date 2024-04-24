@@ -1,0 +1,7 @@
+# Copyright 2024 The Knative Authors
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: knative-restore
