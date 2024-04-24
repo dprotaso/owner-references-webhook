@@ -111,6 +111,7 @@ func newAdmission(c client.Client) *webhook.Admission {
 			bytes := req.Object.Raw
 			obj := &unstructured.Unstructured{}
 
+			log.Print("handling request")
 			if err := json.Unmarshal(bytes, obj); err != nil {
 				return webhook.Errored(401, fmt.Errorf("error parsing resource: %w", err))
 			}
